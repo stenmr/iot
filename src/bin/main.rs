@@ -7,19 +7,19 @@ use iot::index::Index;
 use serde::Deserialize;
 
 #[derive(Default)]
-struct Temperature {
-    value: Mutex<f32>,
+struct Value {
+    value: Mutex<u32>,
 }
 
 #[derive(Deserialize)]
-struct UpdateTemp {
-    temp: f32,
+struct UpdateValue {
+    value: u32,
 }
 
 #[get("/")]
-async fn index(current_temp: web::Data<Temperature>) -> impl Responder {
-    let current_temp = current_temp.value.lock().unwrap();
-    let index_page = Index::new(*current_temp).render().unwrap();
+async fn index(current_value: web::Data<Value>) -> impl Responder {
+    let current_value = current_value.value.lock().unwrap();
+    let index_page = Index::new(*current_value).render().unwrap();
 
     HttpResponse::Ok()
         .content_type("text/html")
@@ -27,12 +27,12 @@ async fn index(current_temp: web::Data<Temperature>) -> impl Responder {
 }
 
 #[get("/u/")]
-async fn update_temp(
-    temp: web::Query<UpdateTemp>,
-    current_temp: web::Data<Temperature>,
+async fn update_value(
+    update_value: web::Query<UpdateValue>,
+    value: web::Data<Value>,
 ) -> impl Responder {
-    let mut value = current_temp.value.lock().unwrap();
-    *value = temp.temp as f32;
+    let mut value = value.value.lock().unwrap();
+    *value = update_value.value;
     HttpResponse::Ok()
 }
 
@@ -42,8 +42,8 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .data(Temperature::default())
-            .service(update_temp)
+            .data(Value::default())
+            .service(update_value)
             .service(index)
     })
     .bind(&ADDRESS)?
