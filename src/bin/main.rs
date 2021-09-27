@@ -26,7 +26,7 @@ async fn index(current_value: web::Data<Value>) -> impl Responder {
         .body(&index_page)
 }
 
-#[get("/u/")]
+#[get("/update")]
 async fn update_value(
     update_value: web::Query<UpdateValue>,
     value: web::Data<Value>,
@@ -34,6 +34,17 @@ async fn update_value(
     let mut value = value.value.lock().unwrap();
     *value = update_value.value;
     HttpResponse::Ok()
+        .content_type("text/plain")
+        .body(&value.to_string())
+}
+
+#[get("/read")]
+async fn read_value(current_value: web::Data<Value>) -> impl Responder {
+    let value = *current_value.value.lock().unwrap();
+
+    HttpResponse::Ok()
+        .content_type("text/plain")
+        .body(&value.to_string())
 }
 
 #[actix_web::main]
@@ -44,6 +55,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(Value::default())
             .service(update_value)
+            .service(read_value)
             .service(index)
     })
     .bind(&ADDRESS)?
