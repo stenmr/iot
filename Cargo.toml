@@ -19,3 +19,6 @@ path = "src/bin/main.rs"
 [lib]
 name = "iot"
 path = "src/lib.rs"
+
+[profile.release]
+opt-level = 1
