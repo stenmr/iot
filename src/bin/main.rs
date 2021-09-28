@@ -56,9 +56,9 @@ async fn read_value(current_value: web::Data<Value>) -> impl Responder {
 #[get("/aggregate")]
 async fn aggregate(current_value: web::Data<Value>) -> impl Responder {
     let addresses = vec![
-        "https://asjadeinternet2021.000webhostapp.com/valgus.txt",
-        "https://raimondlaatspera.000webhostapp.com/ValgusKontroll.txt",
-        "https://testwebsite33.000webhostapp.com/27.09.21/valgus.txt",
+        "http://asjadeinternet2021.000webhostapp.com/valgus.txt",
+        "http://raimondlaatspera.000webhostapp.com/ValgusKontroll.txt",
+        "http://testwebsite33.000webhostapp.com/27.09.21/valgus.txt",
     ];
 
     let ise = HttpResponse::InternalServerError().finish();
